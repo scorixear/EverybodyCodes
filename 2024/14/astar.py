@@ -26,7 +26,7 @@ class AStar(Generic[T, H]):
         self.costs: dict[H, T] = {}
         self.zeroCost = zeroCost
     
-    def find_path(self, start: H, end: H):
+    def find_path(self, start: H, end: H | None):
         queue = []
         queue.append([0,start])
         self.previous = {}
