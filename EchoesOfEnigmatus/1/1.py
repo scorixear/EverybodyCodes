@@ -21,7 +21,7 @@ def main():
 def eni(N, EXP, MOD):
     curr = 1
     remainders = []
-    for i in range(EXP):
+    for _ in range(EXP):
         curr = (curr * N) % MOD
         remainders.append(curr)
     return int("".join(str(x) for x in remainders[::-1]))

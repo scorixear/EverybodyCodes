@@ -2,7 +2,7 @@ import os, sys
 import time
 
 def main():
-    with open(os.path.join(sys.path[0],"e2.txt"), "r", encoding="utf-8") as f:
+    with open(os.path.join(sys.path[0],"i2.txt"), "r", encoding="utf-8") as f:
         text = f.read().strip()
         lines = text.split("\n")
     result = 0
@@ -19,16 +19,22 @@ def main():
         result = max(result, temp)
     print(result)
 def eni(base, exponent, modulus):
-    """Compute the last 5 digits of base^exponent % modulus."""
+    result = ""
+    for i in range(5):
+        val = pow_mod(base, exponent - i, modulus)
+        result += str(val)
+    return int(result)
+
+def pow_mod(base, exponent, modulus):
+    """Compute (base ** exponent) % modulus using exponentiation by squaring."""
     result = 1
-    digits = []
-    for i in range(exponent):
-        print_overwrite(f"Calculating: {i+1}/{exponent} for base {base}")
-        result = (result * base) % modulus
-        if i >= exponent - 5:
-            digits.append(result)
-    print("Calculation complete.", flush=True)
-    return int("".join(str(x) for x in digits[::-1]))
+    base = base % modulus
+    while exponent > 0:
+        if (exponent % 2) == 1:  # If exponent is odd, multiply base with result
+            result = (result * base) % modulus
+        exponent = exponent >> 1  # Divide exponent by 2
+        base = (base * base) % modulus  # Square the base
+    return result
 
 def print_overwrite(text):
     """Print text to the console, overwriting the previous line."""
