@@ -7,41 +7,46 @@ class Node:
         self.value = value
         self.left: "Node | None" = None
         self.right: "Node | None" = None
-    def get_value(self, counter: int):
-        if counter == 0:
+        self.level = 0
+    def add(self, node: "Node") -> int:
+        if node.rank < self.rank:
+            if self.left:
+                return self.left.add(node)
+            else:
+                self.left = node
+                node.level = self.level + 1
+                return node.level
+        elif self.right:
+            return self.right.add(node)
+        else:
+            self.right = node
+            node.level = self.level + 1
+            return node.level
+    def get_value(self, level: int):
+        if level == 0:
             return [self.value]
         result = []
         if self.left:
-            result.extend(self.left.get_value(counter - 1))
+            result.extend(self.left.get_value(level - 1))
         if self.right:
-            result.extend(self.right.get_value(counter - 1))
+            result.extend(self.right.get_value(level - 1))
         return result
 class Tree:
     def __init__(self):
         self.root = None
-        self.node_count = 0
-        self.max_level = 0
-    
-    def add(self, rank, value):
+    def height(self):
         if not self.root:
-            self.root = Node(rank, value)
-            self.max_level = 1
+            return 0
+        def calc_height(node):
+            if not node:
+                return 0
+            return max(calc_height(node.left), calc_height(node.right)) + 1
+        return calc_height(self.root)
+    def add(self, node: Node):
+        if not self.root:
+            self.root = node
         else:
-            self._add_recursive(self.root, rank, value, 1)
-        self.node_count += 1
-    def _add_recursive(self, node: Node, rank, value, level: int):
-        if rank < node.rank:
-            if node.left is None:
-                node.left = Node(rank, value)
-                self.max_level = max(self.max_level, level + 1)
-            else:
-                self._add_recursive(node.left, rank, value, level + 1)
-        else:
-            if node.right is None:
-                node.right = Node(rank, value)
-                self.max_level = max(self.max_level, level + 1)
-            else:
-                self._add_recursive(node.right, rank, value, level + 1)
+            self.root.add(node)
     def get_nodes_per_level(self, level: int):
         if not self.root:
             return []
@@ -58,19 +63,26 @@ def main():
         parts = line.split(" ")
         left = parts[2].split("=")[1][1:-1].split(",")
         right = parts[3].split("=")[1][1:-1].split(",")
-        left_tree.add(int(left[0]), left[1])
-        right_tree.add(int(right[0]), right[1])
-    
-    max_level = max(left_tree.max_level, right_tree.max_level)
-    max_node_count = 0
-    max_nodes = ""
+        left_node = Node(int(left[0]), left[1])
+        right_node = Node(int(right[0]), right[1])
+        left_tree.add(left_node)
+        right_tree.add(right_node)
+
+    max_level = max(left_tree.height(), right_tree.height())
+    max_node_count_left = 0
+    max_node_count_right = 0
+    max_nodes_left = ""
+    max_nodes_right = ""
     for level in range(max_level):
         left_nodes = left_tree.get_nodes_per_level(level)
         right_nodes = right_tree.get_nodes_per_level(level)
-        if len(left_nodes) + len(right_nodes) > max_node_count:
-            max_node_count = len(left_nodes) + len(right_nodes)
-            max_nodes = "".join(left_nodes + right_nodes)
-    print(max_nodes)
+        if len(left_nodes) > max_node_count_left:
+            max_node_count_left = len(left_nodes)
+            max_nodes_left = "".join(left_nodes)
+        if len(right_nodes) > max_node_count_right:
+            max_node_count_right = len(right_nodes)
+            max_nodes_right = "".join(right_nodes)
+    print(max_nodes_left + max_nodes_right)
     
 
 if __name__ == "__main__":
