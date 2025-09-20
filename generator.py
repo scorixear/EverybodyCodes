@@ -14,7 +14,7 @@ if __name__ == "__main__":
     print(f"Time: {{time.perf_counter() - before:.6f}}s")
 """
 
-YEAR = "EchoesOfEnigmatus"
+YEAR = "TheEntertainmentHub"
 for day in range(1, 4):
     if os.path.isdir(os.path.join(YEAR, str(day))):
         continue
