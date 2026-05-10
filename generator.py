@@ -14,8 +14,8 @@ if __name__ == "__main__":
     print(f"Time: {{time.perf_counter() - before:.6f}}s")
 """
 
-YEAR = "2025"
-for day in range(1, 21):
+YEAR = "MelodyMadeOfCode"
+for day in range(1, 4):
     if os.path.isdir(os.path.join(YEAR, str(day))):
         continue
     os.mkdir(os.path.join(YEAR, str(day)))
@@ -37,4 +37,3 @@ for day in range(1, 21):
         f.write(python_code.format(2))
     with open(os.path.join(YEAR, str(day), "3.py"), "w", encoding="UTF-8") as f:
         f.write(python_code.format(3))
-    
