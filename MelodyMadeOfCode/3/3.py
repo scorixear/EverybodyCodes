@@ -29,168 +29,48 @@ class Node:
     def is_bond(socket: tuple[str, str], plug: tuple[str, str]) -> bool:
         return socket[0] == plug[0] or socket[1] == plug[1]
 
+    def _place_in_slot(
+        self,
+        socket: tuple[str, str],
+        child: "Node | None",
+        is_strong: bool,
+        other: "Node",
+    ) -> tuple["Node | None", bool, "Node | None"]:
+        # if the slot is empty
+        # we can potentially place the new node here
+        if child is None:
+            # if the new node doesn't bond with the socket
+            if not self.is_bond(socket, other.plug):
+                # it cannot be placed
+                # the child doesn't change, the bond doesn't change, the displaced node is the new node
+                return child, is_strong, other
+            # if the new node can form a bond
+            # it could be placed here
+            # the child becomes the new node, the bond is updated, the displaced node is None
+            return other, self.is_strong_bond(socket, other.plug), None
+        # the slot is not empty
+        # if this is not a strong bond, and the new node can form a strong bond
+        if not is_strong and self.is_strong_bond(socket, other.plug):
+            # the new node takes the slot, the bond becomes strong, the displaced node is the old child
+            return other, True, child
+        # the child bond is already strong or the new node cannot form a strong bond
+        # the child doesn't change, the bond doesn't change,
+        # the displaced node is the result of trying to place the new node in the child
+        return child, is_strong, child.addNode(other)
+
     def addNode(self, other: "Node") -> "Node | None":
-        # Is left node empty
-        if self.left is None:
-            # is there any match
-            if self.is_bond(self.leftSocket, other.plug):
-                # we will add it
-                # is it a strong bond
-                if self.is_strong_bond(self.leftSocket, other.plug):
-                    self.leftStrong = True
-                self.left = other
-                return None
-            # there is no match, try right node
-            # is right node empty
-            if self.right is None:
-                # is there any match
-                if self.is_bond(self.rightSocket, other.plug):
-                    # we will add it
-                    # is it a strong bond
-                    if self.is_strong_bond(self.rightSocket, other.plug):
-                        self.rightStrong = True
-                    self.right = other
-                    return None
-                # there is no match, we can't add it
-                return other
-            # right node is not empty
-            # is it already a strong bond
-            if self.rightStrong:
-                # add it to the right node
-                return self.right.addNode(other)
-            # its not already a strong bond
-            # is this a strong bond
-            if self.is_strong_bond(self.rightSocket, other.plug):
-                # we overpower it
-                self.rightStrong = True
-                newOther = self.right
-                self.right = other
-                # new overpowered should continue next node after this one
-                return newOther
-            # right node is not empty,
-            # its either already a strong bond
-            # or this is not a strong bond
-            # we add it to the right node
-            return self.right.addNode(other)
-        # left node is not empty
-        # is it already a strong bond
-        if self.leftStrong:
-            # we try to add it to the left node
-            newOther = self.left.addNode(other)
-            # did it succeed
-            if newOther is None:
-                return None
-            # it did not succeed or it returned a new node to add
-            # is the right slot empty
-            if self.right is None:
-                # is it any match
-                if self.is_bond(self.rightSocket, newOther.plug):
-                    # we will add it
-                    # is it a strong bond
-                    if self.is_strong_bond(self.rightSocket, newOther.plug):
-                        self.rightStrong = True
-                    self.right = newOther
-                    return None
-                # there is no match, we can't add it
-                return newOther
-            # right slot is not empty
-            # is it already a strong bond
-            if self.rightStrong:
-                # we add it to the right node
-                return self.right.addNode(newOther)
-            # its not already a strong bond
-            # is this a strong bond
-            if self.is_strong_bond(self.rightSocket, newOther.plug):
-                # we overpower it
-                self.rightStrong = True
-                newOther2 = self.right
-                self.right = newOther
-                # new overpowered should continue next node after this one
-                return newOther2
-            # right node is not empty,
-            # its either already a strong bond
-            # or this is not a strong bond
-            # we add it to the right node
-            return self.right.addNode(newOther)
-        # left node is not empty, but its not a strong bond
-        # is this a strong bond
-        if self.is_strong_bond(self.leftSocket, other.plug):
-            # we overpower it
-            self.leftStrong = True
-            newOther = self.left
-            self.left = other
-            # new other should try right node
-            # is right slot empty
-            if self.right is None:
-                # is there any match
-                if self.is_bond(self.rightSocket, newOther.plug):
-                    # we will add it
-                    # is it a strong bond
-                    if self.is_strong_bond(self.rightSocket, newOther.plug):
-                        self.rightStrong = True
-                    self.right = newOther
-                    return None
-                # there is no match, we can't add it
-                return newOther
-            # right slot is not empty
-            # is it already a strong bond
-            if self.rightStrong:
-                # we add it to the right node
-                return self.right.addNode(newOther)
-            # its not already a strong bond
-            # is this a strong bond
-            if self.is_strong_bond(self.rightSocket, newOther.plug):
-                # we overpower it
-                self.rightStrong = True
-                newOther2 = self.right
-                self.right = newOther
-                # new overpowered should continue next node after this one
-                return newOther2
-            # right node is not empty,
-            # its either already a strong bond
-            # or this is not a strong bond
-            # we add it to the right node
-            return self.right.addNode(newOther)
-        # left node is not empty
-        # its either already a strong bond
-        # or this is not a strong bond
-        # we try to add it to the left node
-        newOther = self.left.addNode(other)
-        # did it succeed
-        if newOther is None:
+        # try to place the new node in the left slot
+        self.left, self.leftStrong, displaced = self._place_in_slot(
+            self.leftSocket, self.left, self.leftStrong, other
+        )
+        # if the node was added to the left, we are done
+        if displaced is None:
             return None
-        # it did not succeed or it returned a new node to add
-        # is the right slot empty
-        if self.right is None:
-            # is it any match
-            if self.is_bond(self.rightSocket, newOther.plug):
-                # we will add it
-                # is it a strong bond
-                if self.is_strong_bond(self.rightSocket, newOther.plug):
-                    self.rightStrong = True
-                self.right = newOther
-                return None
-            # there is no match, we can't add it
-            return newOther
-        # right slot is not empty
-        # is it already a strong bond
-        if self.rightStrong:
-            # we add it to the right node
-            return self.right.addNode(newOther)
-        # its not already a strong bond
-        # is this a strong bond
-        if self.is_strong_bond(self.rightSocket, newOther.plug):
-            # we overpower it
-            self.rightStrong = True
-            newOther2 = self.right
-            self.right = newOther
-            # new overpowered should continue next node after this one
-            return newOther2
-        # right node is not empty,
-        # its either already a strong bond
-        # or this is not a strong bond
-        # we add it to the right node
-        return self.right.addNode(newOther)
+        # otherwise add the displaced node to the right slot (this might still be the original node)
+        self.right, self.rightStrong, displaced = self._place_in_slot(
+            self.rightSocket, self.right, self.rightStrong, displaced
+        )
+        return displaced
 
     def __str__(self):
         return f"{self.id}"
@@ -206,7 +86,7 @@ class Tree:
     def addNode(self, node: Node):
         if self.root is None:
             self.root = node
-            return True
+            return
         nodeToAdd = node
         while nodeToAdd is not None:
             nodeToAdd = self.root.addNode(nodeToAdd)
