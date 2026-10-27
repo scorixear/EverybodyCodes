@@ -1,10 +1,24 @@
 import os, sys
 import time
 
+
 def main():
-    with open(os.path.join(sys.path[0],"e3.txt"), "r", encoding="utf-8") as f:
+    with open(os.path.join(sys.path[0], "i3.txt"), "r", encoding="utf-8") as f:
         text = f.read().strip()
         lines = text.split("\n")
+    nums = [int(l) for l in lines[0].split(",")]
+    count = 0
+    for num in nums:
+        x = 1
+        while formula(x) < num:
+            x += 2
+        count += formula(x) - num
+    print(count)
+
+
+def formula(x: int) -> int:
+    return x * x - 1
+
 
 if __name__ == "__main__":
     before = time.perf_counter()
