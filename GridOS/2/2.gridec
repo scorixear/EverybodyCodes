@@ -1,0 +1,19 @@
+HEADS A
+
+START A A _ R
+A A A @ R
+A B B _ R
+
+START B B _ R
+B B B @ R
+B A A _ R
+
+START _ CHECK * D
+CHECK _ CHECK1 * L
+CHECK1 ! BACK * L
+CHECK1 _ STOP * S
+BACK ! BACK * L
+BACK _ START * R
+
+A _ CHECK * D
+B _ CHECK * D

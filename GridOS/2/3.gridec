@@ -1,0 +1,31 @@
+HEADS AB
+
+START ** BEGIN ** SU
+
+BEGIN A* DA _* DS
+BEGIN B* DB _* DS
+
+DA A* RA *@ UR
+DA B* RA ** US
+DA _* RA ** US
+DB A* RB ** US
+DB B* RB *@ UR
+DB _* RB ** US
+
+RA ** A ** RS
+RB ** B ** RS
+
+A A* DA @* DS
+A B* DB _* DS
+A _* CHECK ** DS
+B A* DA _* DS
+B B* DB @* DS
+B _* CHECK ** DS
+
+CHECK ** CHECK1 ** LS
+CHECK1 !* BACK ** LS
+CHECK1 _* STOP ** SS
+BACK !* BACK ** LS
+BACK _* BEGIN ** RS
+
+

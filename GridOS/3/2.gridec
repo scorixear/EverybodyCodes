@@ -1,0 +1,30 @@
+HEADS AB
+
+START *! START ** SL
+START *_ ALIGN ** DR
+ALIGN ** BEGIN +* UR
+
+BEGIN #* BEGIN ** RR
+BEGIN =* W ~* RR
+W #* BEGIN ** RR
+W =# BEGIN ~* RR
+W == D ~* DS
+D ** U =* US
+U ** W ** RR
+
+BEGIN _* CHECK ** DD
+CHECK ** BACK F* LL
+BACK +* LINE _* SS
+BACK =* BACK ** LL
+BACK _* BACK ** LL
+
+LINE _* LINE ** RR
+LINE =* LW ~* RR
+LINE F* STOP _* SS
+
+LW _* LINE ** RR
+LW =_ LINE ~* RR
+LW == DL ~* DS
+DL ** UL ~* US
+UL ** LW ** RR
+LW F* STOP _* SS

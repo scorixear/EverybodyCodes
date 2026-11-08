@@ -14,8 +14,8 @@ if __name__ == "__main__":
     print(f"Time: {{time.perf_counter() - before:.6f}}s")
 """
 
-YEAR = "MelodyMadeOfCode"
-for day in range(1, 4):
+YEAR = "2026"
+for day in range(1, 20):
     if os.path.isdir(os.path.join(YEAR, str(day))):
         continue
     os.mkdir(os.path.join(YEAR, str(day)))
