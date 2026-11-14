@@ -20,7 +20,7 @@ class Dijkstra(Generic[T, H]):
         self.costs: dict[H, T] = {}
         self.zero_cost = zero_cost
 
-    def find_path(self, start: H, end: H):
+    def find_path(self, start: H, end: H | None):
         queue = []
         queue.append([self.zero_cost, start])
         self.previous = {}
