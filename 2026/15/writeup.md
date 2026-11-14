@@ -225,16 +225,16 @@ $$
 
 So $T[a, b]$ is the cost of one leg from slot $a$ to slot $b$. An entry of $\infty$ means there is no such leg. Using $\infty$ instead of a missing value is what makes the arithmetic later work: $\infty$ plus anything is still $\infty$, so it never wins a minimum.
 
-The first and last legs don't fit into this table, because `S` and `E` are not slots. They get their own vectors:
+The first and last legs don't fit into this table, because `S` and `E` are not slots. They get their own vectors, written $s$ and $e$ in the formulas below:
 
 $$
-\text{from\_start} = \begin{pmatrix} 2 & \infty & 7 \end{pmatrix}
+s = \begin{pmatrix} 2 & \infty & 7 \end{pmatrix}
 \qquad
-\text{to\_end} = \begin{pmatrix} \infty & 3 & 5 \end{pmatrix}
+e = \begin{pmatrix} \infty & 3 & 5 \end{pmatrix}
 $$
 
-- `from_start[b]`: cost of the first leg, from `S` to slot $b$.
-- `to_end[a]`: cost of the last leg, from slot $a$ to `E`. (If a slot can reach `E` with several headings, the cheapest is kept, because the heading at `E` no longer matters.)
+- $s$ is `from_start` in the code. $s[b]$ is the cost of the first leg, from `S` to slot $b$.
+- $e$ is `to_end` in the code. $e[a]$ is the cost of the last leg, from slot $a$ to `E`. (If a slot can reach `E` with several headings, the cheapest is kept, because the heading at `E` no longer matters.)
 
 Once these three arrays exist, the grid is no longer needed. The problem becomes:
 
@@ -255,7 +255,7 @@ $$
 This is a vector with one entry per slot. In the example, after the first leg:
 
 $$
-c_1 = \text{from\_start} = \begin{pmatrix} 2 & \infty & 7 \end{pmatrix}
+c_1 = s = \begin{pmatrix} 2 & \infty & 7 \end{pmatrix}
 $$
 
 ### 6.2 One more visit: "where did the last leg come from?"
@@ -336,7 +336,7 @@ $$
 After $N$ visits, add the last leg to `E` and take the best slot:
 
 $$
-\text{answer} = \min_a \big( c_N[a] + \text{to\_end}[a] \big)
+\text{answer} = \min_a \big( c_N[a] + e[a] \big)
 $$
 
 In the example with $N = 2$:
@@ -431,7 +431,7 @@ That's **38 squarings instead of 2·10¹¹ updates**. The full matrix $T^{N-1}$ 
 ### 7.4 The final answer
 
 $$
-\text{answer} = \min_a \big( c_N[a] + \text{to\_end}[a] \big)
+\text{answer} = \min_a \big( c_N[a] + e[a] \big)
 $$
 
 ```python
